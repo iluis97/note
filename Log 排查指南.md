@@ -31,13 +31,52 @@ share: true
 - **`*` (零个或多个)**：`grep "abc*"` (匹配 ab, abc, abcc...)
 - **`+` (一个或多个)**：`grep -E "abc+"` (至少有一个 c)
 - **`?` (零个或一个)**：`grep -E "https?"` (匹配 http 或 https)
+- `*` 、`+` 、`?` 只作用于**前一个字符**
+
+查找所有包含 “DEVICE_INFO” 且后面任意内容再包含 “25405” 的日志行
+```bash
+grep "DEVICE_INFO.*25405" a.log
+```
 
 ### 3. 分组与分支 (关键)
 - **`|` (或)**：`grep -E "ERROR|WARN|CRITICAL"`
 - **`[]` (字符集)**：`grep "device[1-3]"` (匹配 device1, device2, device3)
 - **`[^]` (排除集)**：`grep "[^0-9]"` (匹配非数字字符)
 
-## 将查询结果输出到文件
+
+## 3. awk基本语法格式
+
+```bash
+awk [选项] 'pattern { action }' filename
+```
+- **Pattern (模式)**：决定“哪些行”会被处理（比如你写的 `$1 == "2026-03-12"`）。
+- **Action (动作)**：决定“怎么处理”这些行（最常用的是 `{print $0}`，如果不写 action，默认就是打印整行）。
+- **Filename**：要处理的文件。
+
+### 深入理解各个部分
+
+#### 常用选项 (Options)
+
+- `-F`：指定分隔符。默认是**空格**或**制表符**。
+    - 例如处理 CSV 文件：`awk -F ',' '{print $1}' file.csv`
+- `-v`：定义外部变量。
+
+#### 常用内置变量
+
+`awk` 会自动将每一行切分成多个字段：
+
+- **`$0`**：代表整行内容。
+- **`$1, $2, ... $n`**：代表第 1、第 2...个字段。
+- **`NF`**：当前行共有多少个字段（Number of Fields）。
+- **`NR`**：当前处理的是第几行（Number of Records）。
+
+#### 逻辑运算符
+
+- `&&` (与), `||` (或), `!` (非)
+- `~` (匹配正则表达式), `!~` (不匹配)
+- `==`, `>=`, `<=`, `>`, `<`
+
+## 4. 将查询结果输出到文件
 
 在调试时，我们通常将过滤后的“精华”内容保存下来，方便后续分析或发送给同事。
 
@@ -62,7 +101,7 @@ grep "ERROR" star-anti-uav-debug.log >> all_errors.txt
 grep "DEVICE_INFO" star-anti-uav-debug.log | tee search_result.log
 ```
 
-## 综合案例实战
+## 5. 综合案例实战
 ### 搜索多个可能的关键字（或关系）
 
 找出所有包含 "fail"、"error" 或 "exception" 的日志，忽略大小写：
@@ -79,6 +118,7 @@ grep -Ei "fail|error|exception" star-anti-uav-debug.log > fatal_issues.log
 ```bash
 grep "2026-03-12" star-anti-uav-debug.log | grep "25405" | grep "MQTT消息成功" > success_flow.log
 ```
+
 
 # 普通日志查询方案
 
