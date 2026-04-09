@@ -227,7 +227,7 @@ awk '$2 >= "08:00:00" && $2 <= "09:00:00"' star-anti-uav-debug.log | grep "25405
 **场景**：在所有的历史日志中查找设备 `25405` 的信息。
 
 ```
-zgrep "25405" star-anti-uav-debug.log.*.gz
+zgrep -a "25405" star-anti-uav-debug.log.*.gz
 ```
 
 - **技巧**：如果想知道匹配项具体在哪个压缩包里，`zgrep` 默认会显示文件名。
@@ -249,7 +249,7 @@ zcat star-anti-uav-debug.log.*.gz | awk '$2 >= "08:00:00" && $2 <= "09:00:00"' |
 
 ```bash
 # 使用 zgrep -f 配合通配符，zgrep 通常也能处理未压缩的普通文本
-zgrep "DEVICE_INFO.*25405" star-anti-uav-debug.log*
+zgrep -a "DEVICE_INFO.*25405" star-anti-uav-debug.log*
 ```
 
 ---
