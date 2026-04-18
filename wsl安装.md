@@ -1,4 +1,6 @@
-# WSL安装
+# WSL指南
+
+## 安装
 
 ## 修复环境变量path【PowerShell 管理员模式】
 
@@ -99,3 +101,66 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 ```
 
 **⚠️ 重要：执行完这两行后，请立即重启电脑。** 只有重启后，Windows 才会真正加载 WSL 的底层驱动。
+
+
+
+
+
+## WSL2 代理配置与镜像模式
+
+### 解决方案
+
+#### 启用镜像模式 (Recommended)
+
+通过在 Windows 用户目录下创建 `.wslconfig` 文件，强制 WSL2 使用镜像模式。
+
+1. 修改配置文件
+
+在 Windows 中按下 `Win + R`，输入 `%USERPROFILE%` 并回车。在该目录下新建或修改 `.wslconfig` 文件，内容如下：
+
+```bash
+# 文件名: .wslconfig
+[wsl2]
+# 启用镜像网络模式，使 WSL 与 Windows 共享 IP 地址
+networkingMode=mirrored
+
+# 允许 WSL 访问宿主机的代理
+dnsTunneling=true
+firewall=true
+autoProxy=true
+```
+
+2. 重启 WSL 服务
+
+打开 PowerShell（管理员权限），执行以下命令让配置生效：
+
+```bash
+wsl --shutdown
+```
+
+重新启动你的 WSL 分发版，此时 WSL 内部将直接支持 `localhost` 代理。
+
+#### 替代方案：手动配置代理（针对无法开启镜像模式的情况）
+
+在 WSL 终端中执行以下命令获取宿主机 IP：
+
+Bash
+
+```
+cat /etc/resolv.conf | grep nameserver | awk '{print $2}'
+```
+
+#### 2. 配置环境变量
+
+在 `~/.bashrc` 或 `~/.zshrc` 中添加以下逻辑，自动捕获 IP 并设置代理（假设代理端口为 7890）：
+
+Bash
+
+```
+# 获取宿主机 IP
+export hostip=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')
+# 设置代理地址
+export http_proxy="http://${hostip}:7897"
+export https_proxy="http://${hostip}:7897"
+```
+

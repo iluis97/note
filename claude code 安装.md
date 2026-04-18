@@ -20,13 +20,13 @@ npm uninstall -g @anthropic-ai/claude-code
 
 ### 安装
 
+#### windows
+
 ```bash
 irm https://claude.ai/install.ps1 | iex
 ```
 
 安装成功需要添加路径到配置文件
-
-#### windows
 
 ```bash
 # 1. 定义需要添加的路径
@@ -46,7 +46,25 @@ if ($oldPath -notlike "*$newPath*") {
 }
 ```
 
+#### wsl
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+安装成功需要添加路径到配置文件
+
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
+```
+
 #### mac
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+安装成功需要添加路径到配置文件
 
 ```bash
 # 将路径写入 .zshrc 配置文件
