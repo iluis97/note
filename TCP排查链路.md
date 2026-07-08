@@ -25,16 +25,52 @@ yum install -y tcpdump
 tcpdump --version
 ```
 
+检测端口是否连通（TCP / UDP）
+```bash
+-- tcp
+nc -znv 192.168.1.94 61100
+
+-- udp
+nc -uzv 192.168.1.100 53
+```
+
+查看端口是否有数据（流量监控与抓包）
+```bash
+
+
+```
 
 抓包
 ```bash
+-- 文本
 tcpdump -i any port 62201 -nn -A | grep heartbeat
+
+-- 十六进制和文本（双列对照）
+tcpdump -i any tcp port 61002 -nn -XX
+
+tcpdump -i any tcp port 8080 -nn -XXvv
 ```
+**核心参数说明：**
+
+- `-i any`：监听所有网络接口（网卡）。
+    
+- `tcp port 8080` / `udp port 53`：指定协议与端口的过滤条件。
+    
+- `-nn`：直接显示 IP 和端口号，不将其解析为主机名和服务名（极大提高运行效率，防止因 DNS 解析导致卡顿）。
+    
+- `-XX`：以 HEX（十六进制）和 ASCII（可读文本）两种格式打印报文内容，非常适合观察**是否有真实业务数据**以及数据内容是否正确。
+    
+- `-vv`：输出极为详细的报文头部信息。
 
 抓包存文件
 ```bash
 tcpdump -i any "tcp port 61002 or tcp port 61100" -w capture.pcap
+
+tcpdump -i any port 8080 -w /tmp/target_port.pcap -c 10000
 ```
+- `-w`：写入文件。
+    
+- `-c 10000`：达到 10000 条数据包后自动停止，防止撑爆磁盘
 
 ## Netty 排查
 
